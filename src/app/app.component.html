@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@clr/core/dist/clr-ui.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    .clr-cyan {
+      background-color: #3f51b5;
+      color: white;
+    }
+  </style>
+  <title>Intent Form</title>
+</head>
+<body class="clr-cyan">
+  <div class="container">
+    <h2>Intent Form</h2>
+    <form>
+      <div class="form-group">
+        <label for="intent">Intent:</label>
+        <input type="text" class="form-control" id="intent" ng-model="intent">
+      </div>
+      <div class="form-group">
+        <label for="example">Example:</label>
+        <input type="text" class="form-control" id="example" ng-model="example">
+      </div>
+      <div class="form-group">
+        <label for="select">Select Intent:</label>
+        <select class="form-control" id="select" ng-model="selectedIntent">
+          <option value="greeting">Greeting</option>
+          <option value="farewell">Farewell</option>
+          <option value="affirmative">Affirmative</option>
+          <option value="negative">Negative</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
+</body>
+</html>
