@@ -10,7 +10,28 @@ import { EmployeeService } from '../services/employee.service';
   styleUrls: ['./emp-add-edit.component.scss'],
 })
 export class EmpAddEditComponent implements OnInit {
-  empForm: FormGroup;
+  items : any[] = [];
+  selectedItem: any='';
+  selectItem(item: any) {
+    this.selectedItem = item;
+  }
+  updateItem() {
+    const index = this.items.length;
+    console.log(index);
+    if(this.selectedItem!=(null ||'')){
+      this.items[index] = this.selectedItem;
+      this.selectedItem = null;
+    }
+    
+  }
+  deleteItem(item: string) {
+    const index = this.items.indexOf(item);
+    if (index !== -1) {
+      this.items.splice(index, 1);
+    }
+  }
+  
+   empForm: FormGroup;
 
   education: string[] = [
     'Matric',
@@ -43,7 +64,10 @@ export class EmpAddEditComponent implements OnInit {
   ngOnInit(): void {
     this.empForm.patchValue(this.data);
   }
-
+  traitement() {
+    // Code de traitement ici
+    alert("Le bouton a été cliqué !");
+}
   onFormSubmit() {
     if (this.empForm.valid) {
       if (this.data) {
