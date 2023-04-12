@@ -21,9 +21,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsModule} from '@angular/material/chips';
+import { ChipsComponent } from './chips/chips.component';
+import { ChipsModule } from './chips/chips.module';
+import {COMMA, SPACE} from "@angular/cdk/keycodes";
+
 
 @NgModule({
-  declarations: [AppComponent, EmpAddEditComponent],
+  declarations: [AppComponent, EmpAddEditComponent, ChipsComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -43,9 +48,18 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatChipsModule,
     MatSnackBarModule,
+    ChipsModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: MAT_CHIPS_DEFAULT_OPTIONS,
+      useValue: {
+        separatorKeyCodes: [COMMA, SPACE]
+      }
+    }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

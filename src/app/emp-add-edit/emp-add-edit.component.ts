@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Constant } from '../constant';
 import { CoreService } from '../core/core.service';
 import { EmployeeService } from '../services/employee.service';
 
@@ -10,6 +11,23 @@ import { EmployeeService } from '../services/employee.service';
   styleUrls: ['./emp-add-edit.component.scss'],
 })
 export class EmpAddEditComponent implements OnInit {
+  questions: string[] = [];
+  responses: string[] = [];
+
+  onQuestionsChanged(newItems: string[]) {
+    this.questions = newItems;
+  }
+  onResponsesChanged(newItems: string[]) {
+    this.responses = newItems;
+  }
+
+  onButtonClick() {
+    console.log(this.questions);
+    console.log(this.responses);
+
+  }
+  question = Constant.question;
+  reponse = Constant.reponse;
   items : any[] = [];
   selectedItem: any='';
   selectItem(item: any) {
@@ -18,11 +36,12 @@ export class EmpAddEditComponent implements OnInit {
   updateItem() {
     const index = this.items.length;
     console.log(index);
-    if(this.selectedItem!=(null ||'')){
+    if(this.selectedItem!=null && this.selectedItem!=''){
+      console.log(this.selectedItem)
       this.items[index] = this.selectedItem;
       this.selectedItem = null;
     }
-    
+
   }
   deleteItem(item: string) {
     const index = this.items.indexOf(item);
@@ -30,7 +49,7 @@ export class EmpAddEditComponent implements OnInit {
       this.items.splice(index, 1);
     }
   }
-  
+
    empForm: FormGroup;
 
   education: string[] = [
@@ -49,15 +68,10 @@ export class EmpAddEditComponent implements OnInit {
     private _coreService: CoreService
   ) {
     this.empForm = this._fb.group({
-      firstName: '',
-      lastName: '',
-      email: '',
-      dob: '',
-      gender: '',
-      education: '',
-      company: '',
-      experience: '',
-      package: '',
+      intent:'',
+      examples:[],
+      exp:[],
+
     });
   }
 
@@ -70,6 +84,7 @@ export class EmpAddEditComponent implements OnInit {
 }
   onFormSubmit() {
     if (this.empForm.valid) {
+      console.log(this.empForm.value)
       if (this.data) {
         this._empService
           .updateEmployee(this.data.id, this.empForm.value)

@@ -42,7 +42,9 @@ export class AppComponent implements OnInit {
   }
 
   openAddEditEmpForm() {
-    const dialogRef = this._dialog.open(EmpAddEditComponent);
+    const dialogRef = this._dialog.open(EmpAddEditComponent, {
+      width: '50%',
+    });
     dialogRef.afterClosed().subscribe({
       next: (val) => {
         if (val) {
