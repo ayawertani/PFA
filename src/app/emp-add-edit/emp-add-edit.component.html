@@ -6,7 +6,7 @@
         <div class="row">
             <mat-form-field appearance="outline">
                 <mat-label>Nom dictionnaire</mat-label>
-                <input matInput type="text" placeholder="Ex. greeting" formControlName="firstName">
+                <input matInput type="text" placeholder="Ex. greeting" formControlName="intent">
             </mat-form-field>
 
         </div>
@@ -42,7 +42,7 @@
     </div>
 
 
-    <app-chips [title]="question" (itemsChanged)="onQuestionsChanged($event)"></app-chips>
+    <app-chips [title]="question" (itemsChanged)="onQuestionsChanged($event)" ></app-chips>
     <app-chips [title]="reponse" (itemsChanged)="onResponsesChanged($event)"></app-chips>
     <button (click)="onButtonClick()">Click Me</button>
 

@@ -9,6 +9,7 @@ export class EmployeeService {
   constructor(private _http: HttpClient) {}
 
   addEmployee(data: any): Observable<any> {
+    console.log(data);
     return this._http.post('http://localhost:3000/employees', data);
   }
 
