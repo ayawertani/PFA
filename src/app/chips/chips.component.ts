@@ -14,6 +14,8 @@ export class ChipsComponent {
   type: string = '';
   @Input()
   title: string = '';
+  @Input()
+  data: any;
   label: string = '';
   items: string[] = [];
 
@@ -28,11 +30,16 @@ export class ChipsComponent {
 
     }
     this.label = this.title == 'Question' ? 'Enter questions' : 'Enter responses';
+    console.log(this.data);
+    this.title == 'Question' ? this.items.push(...this.data.questions) : this.items.push(...this.data.responses);
+    this.itemsChanged.emit(this.items);
+
   }
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-
+    //console.log(typeof value);
+    //console.log(value);
     // Add our fruit
     if (value) {
       this.items.push(value);

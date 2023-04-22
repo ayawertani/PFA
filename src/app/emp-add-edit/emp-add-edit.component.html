@@ -42,9 +42,8 @@
     </div>
 
 
-    <app-chips [title]="question" (itemsChanged)="onQuestionsChanged($event)" ></app-chips>
-    <app-chips [title]="reponse" (itemsChanged)="onResponsesChanged($event)"></app-chips>
-    <button (click)="onButtonClick()">Click Me</button>
+    <app-chips [title]="question" (itemsChanged)="onQuestionsChanged($event)" [data]="data" ></app-chips>
+    <app-chips [title]="reponse" (itemsChanged)="onResponsesChanged($event)" [data]="data"></app-chips>
 
     <div mat-dialog-actions class="action">
         <button mat-raised-button type="button" [mat-dialog-close]="false">Cancel</button>

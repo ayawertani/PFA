@@ -29,6 +29,7 @@ export class EmpAddEditComponent implements OnInit {
 
   onQuestionsChanged(newItems: string[]) {
     this.questions = newItems;
+    console.log(newItems);
     this.empForm.get('questions')?.setValue(newItems);
 
   }
@@ -38,11 +39,6 @@ export class EmpAddEditComponent implements OnInit {
 
   }
 
-  onButtonClick() {
-    console.log(this.questions);
-    console.log(this.responses);
-
-  }
   question = Constant.question;
   reponse = Constant.reponse;
   items : any[] = [];
@@ -69,13 +65,7 @@ export class EmpAddEditComponent implements OnInit {
 
    empForm: FormGroup;
 
-  education: string[] = [
-    'Matric',
-    'Diploma',
-    'Intermediate',
-    'Graduate',
-    'Post Graduate',
-  ];
+
 
   constructor(
     private http:HttpClient,
@@ -94,12 +84,12 @@ private _fb: FormBuilder,
   }
 
   ngOnInit(): void {
+    console.log("onInt")
+    console.log(this.data);
     this.empForm.patchValue(this.data);
+
   }
-  traitement() {
-    // Code de traitement ici
-    alert("Le bouton a été cliqué !");
-}
+
 
   onFormSubmit() {
     /*if (this.empForm.valid) {

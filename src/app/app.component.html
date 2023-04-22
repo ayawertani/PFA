@@ -18,65 +18,47 @@
   <div class="table-container">
     <table mat-table [dataSource]="dataSource" matSort>
 
-      <!-- ID Column -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+      <!-- Intent Column -->
+      <ng-container matColumnDef="intent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Intent </th>
+        <td mat-cell *matCellDef="let row"> {{row.intent}} </td>
       </ng-container>
 
-      <!-- Progress Column -->
-      <ng-container matColumnDef="firstName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> First Name </th>
-        <td mat-cell *matCellDef="let row"> {{row.firstName}}</td>
+      <!-- Questions Column -->
+      <ng-container matColumnDef="questions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Questions </th>
+        <td mat-cell *matCellDef="let row">
+          <ul>
+            <li *ngFor="let question of row.questions">{{ question.text }}</li>
+          </ul>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="lastName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Name </th>
-        <td mat-cell *matCellDef="let row"> {{row.lastName}}</td>
+
+      <ng-container matColumnDef="responses">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Responses </th>
+        <td mat-cell *matCellDef="let row">
+          <ul>
+            <li *ngFor="let response of row.responses">{{ response.text }}</li>
+          </ul>
+        </td>
+
       </ng-container>
 
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
-        <td mat-cell *matCellDef="let row"> {{row.email}}</td>
+      <!-- Responses Column -->
+      <!--
+      <ng-container matColumnDef="responses">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Responses </th>
+        <td mat-cell *matCellDef="let row"> {{getResponses(row, row.intent)}} </td>
       </ng-container>
-
-      <ng-container matColumnDef="dob">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> dob </th>
-        <td mat-cell *matCellDef="let row"> {{row.dob | date}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="gender">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> gender </th>
-        <td mat-cell *matCellDef="let row"> {{row.gender}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="education">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Education </th>
-        <td mat-cell *matCellDef="let row"> {{row.education}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="company">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Company </th>
-        <td mat-cell *matCellDef="let row"> {{row.company}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="experience">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Exp. </th>
-        <td mat-cell *matCellDef="let row"> {{row.experience}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="package">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Package </th>
-        <td mat-cell *matCellDef="let row"> {{row.package | currency:'INR'}}L</td>
-      </ng-container>
-
+-->
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
         <td mat-cell *matCellDef="let row">
           <button mat-icon-button color="primary" (click)="openEditForm(row)">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteEmployee(row.id)">
+          <button mat-icon-button color="warn" (click)="deleteEmployee(row.intent)">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -91,8 +73,9 @@
       </tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of intents"></mat-paginator>
   </div>
+
 
 </div>
 
