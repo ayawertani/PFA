@@ -29,8 +29,7 @@ export class ChipsComponent {
     if (this.type == Constant.question) {
 
     }
-    this.label = this.title == 'Question' ? 'Enter questions' : 'Enter responses';
-    console.log(this.data);
+    this.label = this.title == 'Question' ? 'Enter questions*' : 'Enter responses*';
     this.title == 'Question' ? this.items.push(...this.data.questions) : this.items.push(...this.data.responses);
     this.itemsChanged.emit(this.items);
 

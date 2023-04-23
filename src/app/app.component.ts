@@ -26,6 +26,12 @@ const intentValues = [  {    intent: 'greeting',    questions: ['Hello', 'Hi', '
     questions: ['Thank you', 'Thanks a lot']
   }
 ];
+
+interface DialogNodeTransformed {
+  intent: string;
+  responses: { text: string }[];
+  questions: { text: string }[];
+}
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -43,6 +49,8 @@ export class AppComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  cc: DialogNodeTransformed[] = [];
+
   constructor(
     private _http: HttpClient,
     private _dialog: MatDialog,
@@ -51,7 +59,22 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.cc=[];
     this.getEmployeeList();
+    setTimeout(() => {
+      this.dataSource = new MatTableDataSource(this.cc);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+    }, 3000);
+  }
+  load():void{
+    this.cc=[];
+    this.getEmployeeList();
+    setTimeout(() => {
+      this.dataSource = new MatTableDataSource(this.cc);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+    }, 3000);
   }
 
   openAddEditEmpForm() {
@@ -60,16 +83,20 @@ export class AppComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe({
       next: (val) => {
-        if (val) {
+        console.log("val");
+        console.log(val);
+        this.cc.push(val);
+        this.dataSource = new MatTableDataSource(this.cc);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+        /*if (val) {
           this.getEmployeeList();
-        }
+        }*/
       },
     });
   }
 
   openEditForm(data: any) {
-    console.log("data");
-    console.log(data);
     data={
       intent: data.intent,
       questions: data.questions.map((q: {text: string}) => q.text),
@@ -84,7 +111,8 @@ export class AppComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (val) => {
         if (val) {
-          this.getEmployeeList();
+          this.load();
+
         }
       },
     });
@@ -109,11 +137,7 @@ export class AppComponent implements OnInit {
     }
 
 
-    interface DialogNodeTransformed {
-      intent: string;
-      responses: { text: string }[];
-      questions: { text: string }[];
-    }
+
 
     type DialogNodes = {
       dialog_nodes: DialogNode[];
@@ -135,6 +159,22 @@ export class AppComponent implements OnInit {
     };
 
 
+    this._empService.getDialogNodesList().subscribe((data: DialogNodes) => {
+      data.dialog_nodes.map((node) => {
+        this._empService.getQuestionsList(node.title).subscribe((questions: QuestionList) => {
+          const transformedNode: DialogNodeTransformed = {
+            intent: node.title,
+            responses: node.output.generic[0].values,
+            questions: questions.examples.map((example) => {
+              return { text: example.text };
+            })
+          };
+          this.cc.push(transformedNode);
+        })
+      });
+
+    });
+/*
     this._empService.getDialogNodesList().subscribe((data: DialogNodes) => {
       const observables = data.dialog_nodes.map((node) => {
         return this._empService.getQuestionsList(node.title).pipe(
@@ -163,7 +203,7 @@ export class AppComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
       });
     });
-
+*/
 // Print the array of intent values
  /*      const intentValues = [
           {

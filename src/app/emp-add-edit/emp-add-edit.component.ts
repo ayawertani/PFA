@@ -120,7 +120,8 @@ private _fb: FormBuilder,
         });
       }
     }*/
-
+    //console.log(this.empForm.get('intent')?.value);
+    if(this.empForm.get('intent')?.value!=""&&this.empForm.get('questions')?.value.length!=0&&this.empForm.get('responses')?.value.length!=0){
       this.http.post(postIntentUrl
         ,this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
         console.log(result);
@@ -130,13 +131,21 @@ private _fb: FormBuilder,
         ,this.jsonResponse(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
         next: (val: any) => {
           this._coreService.openSnackBar('created');
-          this._dialogRef.close(true);
+          this._dialogRef.close( {
+            intent: this.empForm.get('intent')?.value,
+            responses: this.empForm.get('responses')?.value,
+            questions: this.empForm.get('questions')?.value}
+          );
         },
         error: (err: any) => {
           console.error(err);
         },
       });
+    }
+    //console.log(this.empForm.get('questions')?.value.length!=0);
+/*
 
+*/
     }
 
 
