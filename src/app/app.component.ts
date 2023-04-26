@@ -15,18 +15,6 @@ const httpOptions = {
     'Authorization': 'Basic ' + btoa('apikey:gonGjOBnw_kd-DCPmduSpvPCzCInN-SM3W_u4H4lJTgn')
   })
 };
-const intentValues = [  {    intent: 'greeting',    questions: ['Hello', 'Hi', 'Good morning']
-},
-  {
-    intent: 'farewell',
-    questions: ['Goodbye', 'See you later', 'Take care']
-  },
-  {
-    intent: 'thanks',
-    questions: ['Thank you', 'Thanks a lot']
-  }
-];
-
 interface DialogNodeTransformed {
   intent: string;
   responses: { text: string }[];
@@ -59,39 +47,40 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log("oninit");
     this.cc=[];
     this.getEmployeeList();
     setTimeout(() => {
       this.dataSource = new MatTableDataSource(this.cc);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
-    }, 3000);
+      console.log(this.cc.length);
+    }, 6000);
   }
-  load():void{
-    this.cc=[];
-    this.getEmployeeList();
-    setTimeout(() => {
-      this.dataSource = new MatTableDataSource(this.cc);
+  reload():void{
+    console.log(this.cc.length);
+    this.dataSource = new MatTableDataSource(this.cc);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
-    }, 3000);
   }
 
   openAddEditEmpForm() {
+    console.log("this.cc");
+    console.log(this.cc);
     const dialogRef = this._dialog.open(EmpAddEditComponent, {
       width: '50%',
     });
     dialogRef.afterClosed().subscribe({
       next: (val) => {
-        console.log("val");
-        console.log(val);
-        this.cc.push(val);
+        let data={
+          intent: val.intent,
+          responses: val.responses.map((value:string) => ({ text: value })),
+          questions: val.questions.map((value:string) => ({ text: value }))
+        };
+        this.cc.push(data);
         this.dataSource = new MatTableDataSource(this.cc);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
-        /*if (val) {
-          this.getEmployeeList();
-        }*/
       },
     });
   }
@@ -102,8 +91,6 @@ export class AppComponent implements OnInit {
       questions: data.questions.map((q: {text: string}) => q.text),
       responses: data.responses.map((r: {text: string}) => r.text)
     }
-    console.log(data);
-    //console.log(typeof data);
     const dialogRef = this._dialog.open(EmpAddEditComponent, {
       width: '50%',data,
     });
@@ -111,16 +98,12 @@ export class AppComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (val) => {
         if (val) {
-          this.load();
-
+          console.log("val modif "+val);
         }
       },
     });
   }
   getEmployeeList() {
-
-
-
 
     interface DialogNode {
       type: string;
@@ -174,65 +157,6 @@ export class AppComponent implements OnInit {
       });
 
     });
-/*
-    this._empService.getDialogNodesList().subscribe((data: DialogNodes) => {
-      const observables = data.dialog_nodes.map((node) => {
-        return this._empService.getQuestionsList(node.title).pipe(
-          map((questionsData: QuestionList) => {
-            const transformedNode: DialogNodeTransformed = {
-              intent: node.title,
-              responses: node.output.generic[0].values,
-              questions: questionsData.examples.map((example) => {
-                return { text: example.text };
-              })
-            };
-            return transformedNode;
-          }),
-          catchError((error) => {
-            console.log(`Error fetching questions for ${node.title}: ${error.message}`);
-            return of(null);
-          })
-        );
-      });
-
-      forkJoin(observables).subscribe((transformedNodes: (DialogNodeTransformed | null)[]) => {
-        transformedData.dialog_nodes_transformed = transformedNodes.filter((node) => node !== null) as DialogNodeTransformed[];
-        console.log(transformedData.dialog_nodes_transformed);
-        this.dataSource = new MatTableDataSource(transformedData.dialog_nodes_transformed);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    });
-*/
-// Print the array of intent values
- /*      const intentValues = [
-          {
-            intent: 'greeting',
-            questions:[ {text:'Hello, Hi, Good morning'},
-              {text:'Hellooo'}
-              ],
-            responses:[ {text:'Hi!'},
-              {text:'Hellooo!'}
-            ]
-          },
-          {
-            intent: 'c21',
-            questions:[ {text:'c21?'}
-            ],
-            responses:[ {text:'Good morning!'},
-              {text:'Hellooo!'}
-            ]
-          }
-        ];
-
-        console.log(intentValues);
-        console.log(transformedData.dialog_nodes_transformed);
-
-        this.dataSource = new MatTableDataSource(intentValues);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-*/
-
       }
 
   applyFilter(event: Event) {
@@ -244,11 +168,19 @@ export class AppComponent implements OnInit {
     }
   }
 
-  deleteEmployee(id: number) {
-    this._empService.deleteEmployee(id).subscribe({
+  deleteEmployee(intent: any) {
+    console.log(intent);
+    this._empService.deleteIntent(intent).subscribe({
       next: (res) => {
+        console.log("res");
+        console.log(res);
+        console.log(this.cc.length);
+        this.cc = this.cc.filter((item) => item.intent !== intent);
+        console.log(this.cc.length);
+        this.dataSource = new MatTableDataSource(this.cc);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
         this._coreService.openSnackBar('Employee deleted!', 'done');
-        this.getEmployeeList();
       },
       error: console.log,
     });

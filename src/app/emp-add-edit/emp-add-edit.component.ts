@@ -120,7 +120,8 @@ private _fb: FormBuilder,
         });
       }
     }*/
-    //console.log(this.empForm.get('intent')?.value);
+//console.log(this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value));
+
     if(this.empForm.get('intent')?.value!=""&&this.empForm.get('questions')?.value.length!=0&&this.empForm.get('responses')?.value.length!=0){
       this.http.post(postIntentUrl
         ,this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
@@ -128,8 +129,9 @@ private _fb: FormBuilder,
       }, (error: any) => console.log('dictionary already exists... use the update option in the main page'));
 
       this.http.post(dialog_nodeUrl
-        ,this.jsonResponse(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
+        ,this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
         next: (val: any) => {
+          console.log(val)
           this._coreService.openSnackBar('created');
           this._dialogRef.close( {
             intent: this.empForm.get('intent')?.value,
@@ -141,32 +143,47 @@ private _fb: FormBuilder,
           console.error(err);
         },
       });
+
+
     }
     //console.log(this.empForm.get('questions')?.value.length!=0);
 /*
 
 */
     }
+    jsonDialogNode(dict:string,responses:string[]){
+
+      return{
+        dialog_node: dict,
+          conditions: `#${dict}`,
+        output: {
+        generic: [
+          {
+            response_type: "text",
+            values: responses.map(value => ({ text: value }))
+          }
+        ]
+      },
+        title: dict
+      }
+
+    }
+
+
+
 
 
     jsonIntent(dict:string,userInput:string[]):string {
+
     let examples="";
     for(let i=0;i<userInput.length;i++){
       examples+='{"text":"'+userInput[i]+'"},';
     }
       examples=examples.slice(0, -1)
+      console.log( '{"intent":"'+dict+'","examples":['+examples+']}');
       return '{"intent":"'+dict+'","examples":['+examples+']}'
 
     }
-    jsonResponse(dict:string,ChatbotOutput:string[]):string {
-      let examples="";
-      for(let i=0;i<ChatbotOutput.length;i++){
-        examples+='{"text":"'+ChatbotOutput[i]+'"},';
-      }
-      examples=examples.slice(0, -1)
-     return '{"dialog_node": "'+dict+'","conditions":"#'+dict+'", "output":{"generic": [{"response_type":"text", "values":['+examples +
-       '] } ] }, "title":"'+dict+'"}'
 
-    }
 
 }
