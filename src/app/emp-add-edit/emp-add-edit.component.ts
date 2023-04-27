@@ -84,72 +84,74 @@ private _fb: FormBuilder,
   }
 
   ngOnInit(): void {
-    console.log("onInt")
-    console.log(this.data);
+    if(this.data!==null){
+      this.empForm.get('intent')?.disable();//? to safely access the empForm FormGroup and the intent form control.
+      // This operator checks if the object is null or undefined before accessing its properties or methods
+    }
     this.empForm.patchValue(this.data);
 
   }
 
 
   onFormSubmit() {
-    /*if (this.empForm.valid) {
+    if (this.empForm.valid) {
       //console.log(this.empForm.value)
       if (this.data) {
-        console.log("update")
-        this._empService
-          .updateEmployee(this.data.id, this.empForm.value)
-          .subscribe({
-            next: (val: any) => {
-              this._coreService.openSnackBar('Employee detail updated!');
-              this._dialogRef.close(true);
-            },
-            error: (err: any) => {
-              console.error(err);
-            },
-          });
-      } else {
-        console.log("create")
-        this._empService.addEmployee(this.empForm.value).subscribe({
+        console.log("update");
+        console.log(this.empForm.get('intent')?.value);
+        console.log(this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value));
+        this.http.post(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/`+
+    `workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/`+this.empForm.get('intent')?.value+`?version=2023-02-01`
+          ,this.jsonIntents(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
+          console.log(result);
+        }, (error: any) => console.log('errerur'));
+
+        this.http.post(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/dialog_nodes/`+this.empForm.get('intent')?.value+`?version=2023-02-01`
+          ,this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
           next: (val: any) => {
-            this._coreService.openSnackBar('Employee added successfully');
-            this._dialogRef.close(true);
+            console.log(val)
+            this._coreService.openSnackBar('updated');
+            this._dialogRef.close( {
+              intent: this.empForm.get('intent')?.value,
+              responses: this.empForm.get('responses')?.value,
+              questions: this.empForm.get('questions')?.value}
+            );
           },
           error: (err: any) => {
             console.error(err);
           },
         });
+
       }
-    }*/
-//console.log(this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value));
+      else {
+        console.log("create")
+        if(this.empForm.get('intent')?.value!=""&&this.empForm.get('questions')?.value.length!=0&&this.empForm.get('responses')?.value.length!=0){
+          this.http.post(postIntentUrl
+            ,this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
+            console.log(result);
+          }, (error: any) => console.log('dictionary already exists... use the update option in the main page'));
 
-    if(this.empForm.get('intent')?.value!=""&&this.empForm.get('questions')?.value.length!=0&&this.empForm.get('responses')?.value.length!=0){
-      this.http.post(postIntentUrl
-        ,this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
-        console.log(result);
-      }, (error: any) => console.log('dictionary already exists... use the update option in the main page'));
-
-      this.http.post(dialog_nodeUrl
-        ,this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
-        next: (val: any) => {
-          console.log(val)
-          this._coreService.openSnackBar('created');
-          this._dialogRef.close( {
-            intent: this.empForm.get('intent')?.value,
-            responses: this.empForm.get('responses')?.value,
-            questions: this.empForm.get('questions')?.value}
-          );
-        },
-        error: (err: any) => {
-          console.error(err);
-        },
-      });
+          this.http.post(dialog_nodeUrl
+            ,this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
+            next: (val: any) => {
+              console.log(val)
+              this._coreService.openSnackBar('created');
+              this._dialogRef.close( {
+                intent: this.empForm.get('intent')?.value,
+                responses: this.empForm.get('responses')?.value,
+                questions: this.empForm.get('questions')?.value}
+              );
+            },
+            error: (err: any) => {
+              console.error(err);
+            },
+          });
 
 
+        }
+      }
     }
-    //console.log(this.empForm.get('questions')?.value.length!=0);
-/*
 
-*/
     }
     jsonDialogNode(dict:string,responses:string[]){
 
@@ -169,8 +171,15 @@ private _fb: FormBuilder,
 
     }
 
+  jsonIntents(dict:string,responses:string[]) {
+
+    return {
+      intent: dict,
+      examples: responses.map(value => ({text: value})),
 
 
+    }
+  }
 
 
     jsonIntent(dict:string,userInput:string[]):string {

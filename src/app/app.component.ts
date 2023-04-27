@@ -97,9 +97,17 @@ export class AppComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe({
       next: (val) => {
-        if (val) {
-          console.log("val modif "+val);
-        }
+        let data={
+          intent: val.intent,
+          responses: val.responses.map((value:string) => ({ text: value })),
+          questions: val.questions.map((value:string) => ({ text: value }))
+        };
+        console.log(data);
+        this.cc = this.cc.filter((item) => item.intent !== val.intent);
+        this.cc.push(data);
+        this.dataSource = new MatTableDataSource(this.cc);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
       },
     });
   }

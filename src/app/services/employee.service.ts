@@ -19,8 +19,9 @@ export class EmployeeService {
     return this._http.post('http://localhost:3000/employees', data);
   }
 
-  updateEmployee(id: number, data: any): Observable<any> {
-    return this._http.put(`http://localhost:3000/employees/${id}`, data);
+  updateEmployee(data: any): Observable<any> {
+    return this._http.put(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/
+    workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/c29?version=2023-02-01`,httpOptions, data);
   }
 
   getIntentList(): Observable<any> {
