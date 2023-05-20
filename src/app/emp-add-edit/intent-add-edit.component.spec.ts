@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EmpAddEditComponent } from './emp-add-edit.component';
+import { IntentAddEditComponent } from './intent-add-edit.component';
 
 describe('EmpAddEditComponent', () => {
-  let component: EmpAddEditComponent;
-  let fixture: ComponentFixture<EmpAddEditComponent>;
+  let component: IntentAddEditComponent;
+  let fixture: ComponentFixture<IntentAddEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EmpAddEditComponent ]
+      declarations: [ IntentAddEditComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EmpAddEditComponent);
+    fixture = TestBed.createComponent(IntentAddEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

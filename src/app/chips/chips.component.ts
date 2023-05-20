@@ -26,9 +26,7 @@ export class ChipsComponent {
   itemsChanged: EventEmitter<string[]> = new EventEmitter<string[]>();
 
   ngOnInit() {
-    if (this.type == Constant.question) {
 
-    }
     this.label = this.title == 'Question' ? 'Enter questions*' : 'Enter responses*';
     this.title == 'Question' ? this.items.push(...this.data.questions) : this.items.push(...this.data.responses);
     this.itemsChanged.emit(this.items);
@@ -37,9 +35,8 @@ export class ChipsComponent {
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
-    //console.log(typeof value);
-    //console.log(value);
-    // Add our fruit
+
+    // Add question/response to the array named items
     if (value) {
       this.items.push(value);
       this.itemsChanged.emit(this.items);
@@ -61,13 +58,13 @@ export class ChipsComponent {
   edit(item: string, event: MatChipEditedEvent) {
     const value = event.value.trim();
 
-    // Remove fruit if it no longer has a name
+    // Remove question/response if it no longer has a name
     if (!value) {
       this.remove(item);
       return;
     }
 
-    // Edit existing fruit
+    // Edit existing question/response
     const index = this.items.indexOf(item);
     if (index >= 0) {
       this.items[index] = value;

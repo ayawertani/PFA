@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, NgForm} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constant } from '../constant';
 import { CoreService } from '../core/core.service';
-import { EmployeeService } from '../services/employee.service';
+import { IntentService } from '../services/intent.service';
 import {HttpClient  } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 const httpOptions = {
@@ -19,23 +19,22 @@ const dialog_nodeUrl='https://api.au-syd.assistant.watson.cloud.ibm.com/instance
 const x='{"intent":"'
 @Component({
   selector: 'app-emp-add-edit',
-  templateUrl: './emp-add-edit.component.html',
-  styleUrls: ['./emp-add-edit.component.scss'],
+  templateUrl: './intent-add-edit.component.html',
+  styleUrls: ['./intent-add-edit.component.scss'],
 })
-export class EmpAddEditComponent implements OnInit {
+export class IntentAddEditComponent implements OnInit {
 
   questions: string[] = [];
   responses: string[] = [];
 
   onQuestionsChanged(newItems: string[]) {
     this.questions = newItems;
-    console.log(newItems);
-    this.empForm.get('questions')?.setValue(newItems);
+    this.intentForm.get('questions')?.setValue(newItems);
 
   }
   onResponsesChanged(newItems: string[]) {
     this.responses = newItems;
-    this.empForm.get('responses')?.setValue(newItems);
+    this.intentForm.get('responses')?.setValue(newItems);
 
   }
 
@@ -48,9 +47,7 @@ export class EmpAddEditComponent implements OnInit {
   }
   updateItem() {
     const index = this.items.length;
-    console.log(index);
     if(this.selectedItem!=null && this.selectedItem!=''){
-      console.log(this.selectedItem)
       this.items[index] = this.selectedItem;
       this.selectedItem = null;
     }
@@ -63,19 +60,19 @@ export class EmpAddEditComponent implements OnInit {
     }
   }
 
-   empForm: FormGroup;
+   intentForm: FormGroup;
 
 
 
   constructor(
     private http:HttpClient,
 private _fb: FormBuilder,
-    private _empService: EmployeeService,
-    private _dialogRef: MatDialogRef<EmpAddEditComponent>,
+    private _empService: IntentService,
+    private _dialogRef: MatDialogRef<IntentAddEditComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private _coreService: CoreService
   ) {
-    this.empForm = this._fb.group({
+    this.intentForm = this._fb.group({
       intent:'',
       questions:[],
       responses:[[]], // Initialize with empty array
@@ -85,36 +82,31 @@ private _fb: FormBuilder,
 
   ngOnInit(): void {
     if(this.data!==null){
-      this.empForm.get('intent')?.disable();//? to safely access the empForm FormGroup and the intent form control.
+      this.intentForm.get('intent')?.disable();//? to safely access the intentForm FormGroup and the intent form control.
       // This operator checks if the object is null or undefined before accessing its properties or methods
     }
-    this.empForm.patchValue(this.data);
+    this.intentForm.patchValue(this.data);
 
   }
 
 
   onFormSubmit() {
-    if (this.empForm.valid) {
-      //console.log(this.empForm.value)
+    if (this.intentForm.valid) {
       if (this.data) {
-        console.log("update");
-        console.log(this.empForm.get('intent')?.value);
-        console.log(this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value));
         this.http.post(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/`+
-    `workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/`+this.empForm.get('intent')?.value+`?version=2023-02-01`
-          ,this.jsonIntents(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
+    `workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/`+this.intentForm.get('intent')?.value+`?version=2023-02-01`
+          ,this.jsonIntents(this.intentForm.get('intent')?.value, this.intentForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
           console.log(result);
-        }, (error: any) => console.log('errerur'));
+        }, () => console.log('erreur'));
 
-        this.http.post(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/dialog_nodes/`+this.empForm.get('intent')?.value+`?version=2023-02-01`
-          ,this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
-          next: (val: any) => {
-            console.log(val)
+        this.http.post(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/dialog_nodes/`+this.intentForm.get('intent')?.value+`?version=2023-02-01`
+          ,this.jsonDialogNode(this.intentForm.get('intent')?.value,this.intentForm.get('responses')?.value), httpOptions).subscribe({
+          next: () => {
             this._coreService.openSnackBar('updated');
             this._dialogRef.close( {
-              intent: this.empForm.get('intent')?.value,
-              responses: this.empForm.get('responses')?.value,
-              questions: this.empForm.get('questions')?.value}
+              intent: this.intentForm.get('intent')?.value,
+              responses: this.intentForm.get('responses')?.value,
+              questions: this.intentForm.get('questions')?.value}
             );
           },
           error: (err: any) => {
@@ -125,21 +117,21 @@ private _fb: FormBuilder,
       }
       else {
         console.log("create")
-        if(this.empForm.get('intent')?.value!=""&&this.empForm.get('questions')?.value.length!=0&&this.empForm.get('responses')?.value.length!=0){
+        console.log(this.intentForm.value);
+        if(this.intentForm.get('intent')?.value!=""&&this.intentForm.get('questions')?.value.length!=0&&this.intentForm.get('responses')?.value.length!=0){
           this.http.post(postIntentUrl
-            ,this.jsonIntent(this.empForm.get('intent')?.value, this.empForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
+            ,this.jsonIntent(this.intentForm.get('intent')?.value, this.intentForm.get('questions')?.value), httpOptions).subscribe((result: any) => {
             console.log(result);
-          }, (error: any) => console.log('dictionary already exists... use the update option in the main page'));
+          }, () => console.log('dictionary already exists... use the update option in the main page'));
 
           this.http.post(dialog_nodeUrl
-            ,this.jsonDialogNode(this.empForm.get('intent')?.value,this.empForm.get('responses')?.value), httpOptions).subscribe({
-            next: (val: any) => {
-              console.log(val)
+            ,this.jsonDialogNode(this.intentForm.get('intent')?.value,this.intentForm.get('responses')?.value), httpOptions).subscribe({
+            next: () => {
               this._coreService.openSnackBar('created');
               this._dialogRef.close( {
-                intent: this.empForm.get('intent')?.value,
-                responses: this.empForm.get('responses')?.value,
-                questions: this.empForm.get('questions')?.value}
+                intent: this.intentForm.get('intent')?.value,
+                responses: this.intentForm.get('responses')?.value,
+                questions: this.intentForm.get('questions')?.value}
               );
             },
             error: (err: any) => {
@@ -185,11 +177,10 @@ private _fb: FormBuilder,
     jsonIntent(dict:string,userInput:string[]):string {
 
     let examples="";
-    for(let i=0;i<userInput.length;i++){
-      examples+='{"text":"'+userInput[i]+'"},';
+    for(const element of userInput) {
+      examples += '{"text":"' + element+'"},';
     }
       examples=examples.slice(0, -1)
-      console.log( '{"intent":"'+dict+'","examples":['+examples+']}');
       return '{"intent":"'+dict+'","examples":['+examples+']}'
 
     }

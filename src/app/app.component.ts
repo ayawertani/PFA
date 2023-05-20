@@ -1,20 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EmpAddEditComponent } from './emp-add-edit/emp-add-edit.component';
-import { EmployeeService } from './services/employee.service';
+import { IntentAddEditComponent } from './emp-add-edit/intent-add-edit.component';
+import { IntentService } from './services/intent.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CoreService } from './core/core.service';
 import {HttpClient} from "@angular/common/http";
-import { HttpHeaders } from '@angular/common/http';
-import {catchError, forkJoin, map, of} from "rxjs";
-const httpOptions = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Authorization': 'Basic ' + btoa('apikey:gonGjOBnw_kd-DCPmduSpvPCzCInN-SM3W_u4H4lJTgn')
-  })
-};
+
+
 interface DialogNodeTransformed {
   intent: string;
   responses: { text: string }[];
@@ -42,20 +36,20 @@ export class AppComponent implements OnInit {
   constructor(
     private _http: HttpClient,
     private _dialog: MatDialog,
-    private _empService: EmployeeService,
+    private _intentService: IntentService,
     private _coreService: CoreService
   ) {}
 
   ngOnInit(): void {
-    console.log("oninit");
+
     this.cc=[];
-    this.getEmployeeList();
-    setTimeout(() => {
+    this.getDictionaryList();
+    /*setTimeout(() => {
       this.dataSource = new MatTableDataSource(this.cc);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
       console.log(this.cc.length);
-    }, 6000);
+    }, 1500);*/
   }
   reload():void{
     console.log(this.cc.length);
@@ -64,10 +58,9 @@ export class AppComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
   }
 
-  openAddEditEmpForm() {
-    console.log("this.cc");
-    console.log(this.cc);
-    const dialogRef = this._dialog.open(EmpAddEditComponent, {
+  openAddEditIntentForm() {
+
+    const dialogRef = this._dialog.open(IntentAddEditComponent, {
       width: '50%',
     });
     dialogRef.afterClosed().subscribe({
@@ -77,6 +70,7 @@ export class AppComponent implements OnInit {
           responses: val.responses.map((value:string) => ({ text: value })),
           questions: val.questions.map((value:string) => ({ text: value }))
         };
+        console.log(data);
         this.cc.push(data);
         this.dataSource = new MatTableDataSource(this.cc);
         this.dataSource.sort = this.sort;
@@ -91,7 +85,7 @@ export class AppComponent implements OnInit {
       questions: data.questions.map((q: {text: string}) => q.text),
       responses: data.responses.map((r: {text: string}) => r.text)
     }
-    const dialogRef = this._dialog.open(EmpAddEditComponent, {
+    const dialogRef = this._dialog.open(IntentAddEditComponent, {
       width: '50%',data,
     });
 
@@ -111,7 +105,7 @@ export class AppComponent implements OnInit {
       },
     });
   }
-  getEmployeeList() {
+  getDictionaryList() {
 
     interface DialogNode {
       type: string;
@@ -141,18 +135,11 @@ export class AppComponent implements OnInit {
       pagination: { refresh_url: string };
     };
 
-    interface DialogNodesTransformed {
-      dialog_nodes_transformed: DialogNodeTransformed[];
-    }
-    const data=this._empService.getDialogNodesList();
-    const transformedData: DialogNodesTransformed = {
-      dialog_nodes_transformed: []
-    };
 
 
-    this._empService.getDialogNodesList().subscribe((data: DialogNodes) => {
+    this._intentService.getDialogNodesList().subscribe((data: DialogNodes) => {
       data.dialog_nodes.map((node) => {
-        this._empService.getQuestionsList(node.title).subscribe((questions: QuestionList) => {
+        this._intentService.getQuestionsList(node.title).subscribe((questions: QuestionList) => {
           const transformedNode: DialogNodeTransformed = {
             intent: node.title,
             responses: node.output.generic[0].values,
@@ -161,10 +148,14 @@ export class AppComponent implements OnInit {
             })
           };
           this.cc.push(transformedNode);
+          this.dataSource = new MatTableDataSource(this.cc);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
         })
       });
 
     });
+
       }
 
   applyFilter(event: Event) {
@@ -176,19 +167,17 @@ export class AppComponent implements OnInit {
     }
   }
 
-  deleteEmployee(intent: any) {
+  deleteIntent(intent: any) {
     console.log(intent);
-    this._empService.deleteIntent(intent).subscribe({
-      next: (res) => {
-        console.log("res");
-        console.log(res);
-        console.log(this.cc.length);
+    this._intentService.deleteIntent(intent).subscribe({
+      next: () => {
+
         this.cc = this.cc.filter((item) => item.intent !== intent);
         console.log(this.cc.length);
         this.dataSource = new MatTableDataSource(this.cc);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
-        this._coreService.openSnackBar('Employee deleted!', 'done');
+        this._coreService.openSnackBar('Intent deleted!', 'done');
       },
       error: console.log,
     });
@@ -196,18 +185,5 @@ export class AppComponent implements OnInit {
 
 
 
-  getQuestions(row:any, intent: string) {
-    console.log("intent");
-    console.log(intent);
-    return this._http.get('https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/' +
-      intent+'/examples?version=2023-02-01',httpOptions);
 
-
-  }
-
-  getResponses(row:any, intent: string) {
-    return this._http.get('http://localhost:3000/employees');
-
-
-  }
 }

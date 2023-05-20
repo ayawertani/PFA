@@ -11,18 +11,8 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root',
 })
-export class EmployeeService {
+export class IntentService {
   constructor(private _http: HttpClient) {}
-
-  addEmployee(data: any): Observable<any> {
-    console.log(data);
-    return this._http.post('http://localhost:3000/employees', data);
-  }
-
-  updateEmployee(data: any): Observable<any> {
-    return this._http.put(`https://api.au-syd.assistant.watson.cloud.ibm.com/instances/18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/
-    workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/c29?version=2023-02-01`,httpOptions, data);
-  }
 
   getIntentList(): Observable<any> {
     return this._http.get('https://api.au-syd.assistant.watson.cloud.ibm.com/instances/' +
@@ -46,13 +36,5 @@ export class EmployeeService {
     return this._http.get('https://api.au-syd.assistant.watson.cloud.ibm.com/instances/' +
       '18b8007d-97e0-478d-9f54-27cc3bec8c2c/v1/workspaces/3756dbf5-ea5c-43cf-a0d2-81dfa1bbe60b/intents/'+intentName+'/examples?version=2023-02-01',httpOptions);
   }
-  /*examplesTraitement(examples:any){
-    examples.map(example => {
-      return { text: example.text };
-    });
-  }*/
- /* questionsTraitement(emp:EmployeeService,intent:any){
-    emp.getQuestionsList(intent).subscribe((examples: any) => emp.examplesTraitement(examples));
 
-  }*/
 }
